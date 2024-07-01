@@ -6,8 +6,8 @@ Ce projet est une application de détection de mélanome utilisant l'apprentissa
 
 ## Fonctionnalités
 
-- **Entraînement de modèle** : Permet d'entraîner un modèle de détection de mélanome à partir d'images fournies.
-- **Prédiction** : Utilise le modèle entraîné pour prédire si une image donnée est susceptible de représenter un mélanome.
+- **Entraînement de modèle** : Permet d'entraîner un modèle de détection de mélanome et nevus à partir d'images fournies.
+- **Prédiction** : Utilise le modèle entraîné pour prédire si une image donnée est susceptible de représenter un mélanome ou un nevus.
 - **Chatbot** : Un chatbot intégré pour fournir des informations supplémentaires ou répondre à des questions.
 
 ## Technologies utilisées

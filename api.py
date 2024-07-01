@@ -19,7 +19,7 @@ class Message(BaseModel):
 class ChatRequest(BaseModel):
     messages: List[Message]
 
-openai.api_key = "sk-proj-aF0mmTn9ZTjRbfDTe5SoT3BlbkFJ7uGdIu3eFhJ09vRkXTng"
+openai.api_key = "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"
 
 class TrainingData(BaseModel):
     filenames: list
@@ -41,7 +41,7 @@ async def train_model(training_data: TrainingData):
 
 @app.post("/predict", tags=["Model Prediction"])
 async def predict(file: UploadFile = File(...)):
-    model_path = "model/model.h5"
+    model_path = "model.h5"
 
     image_bytes = await file.read()
     result = predict_image(model_path, image_bytes)

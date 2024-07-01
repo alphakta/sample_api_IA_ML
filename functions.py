@@ -1,44 +1,12 @@
 import os
 import pandas as pd
-from tensorflow.keras.models import Sequential, Model
+import numpy as np
+import io
+from tensorflow.keras.models import Sequential, Model, load_model
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout, Input
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.applications import VGG16
-
-def train_cnn_model(data_path, filenames, labels):
-    df = pd.DataFrame({'filename': filenames, 'label': labels})
-
-    datagen = ImageDataGenerator(rescale=1./255)
-
-    generator = datagen.flow_from_dataframe(
-        dataframe=df,
-        directory=data_path,
-        x_col='filename',
-        y_col='label',
-        target_size=(250, 250),
-        class_mode='binary',
-        batch_size=32
-    )
-
-    model = Sequential([
-        Conv2D(filters=32, kernel_size=(3, 3), activation='relu', input_shape=(250, 250, 3)),
-        Dropout(0.4),
-        MaxPooling2D(pool_size=(2, 2)),
-        Conv2D(filters=64, kernel_size=(3, 3), activation='relu'),
-        Dropout(0.4),
-        MaxPooling2D((2, 2)),
-        Conv2D(filters=64, kernel_size=(3, 3), activation='relu'),
-        Dropout(0.4),
-        Flatten(),
-        Dense(units=32, activation='relu'),
-        Dense(units=1, activation='sigmoid')
-    ])
-
-    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
-
-    model.fit(generator, epochs=10)
-
-    model.save('model/model.h5')
+from tensorflow.keras.preprocessing import image
 
 def train_vgg16_model(data_path, filenames, labels):
     df = pd.DataFrame({'filename': filenames, 'label': [str(label) for label in labels]})
@@ -84,14 +52,9 @@ def train_vgg16_model(data_path, filenames, labels):
         epochs=10
     )
 
-    model.save('model/model.h5')
+    model.save('model.h5')
 
 def predict_image(model_path, image_bytes):
-    from tensorflow.keras.models import load_model
-    from tensorflow.keras.preprocessing import image
-    import numpy as np
-    import io
-
     if not os.path.exists(model_path):
         raise FileNotFoundError("Model not found. Please train the model first.")
 
