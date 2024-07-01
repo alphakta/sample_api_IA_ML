@@ -52,7 +52,8 @@ def train_vgg16_model(data_path, filenames, labels):
         epochs=10
     )
 
-    model.save('model.h5')
+    model.save('model.keras')
+
 
 def predict_image(model_path, image_bytes):
     if not os.path.exists(model_path):

@@ -1,6 +1,6 @@
 import os
 from typing import List
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI, Query, UploadFile, File, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 import openai
@@ -12,18 +12,15 @@ app = FastAPI(
     version="1.0.0",
 )
 
-class Message(BaseModel):
-    role: str
-    content: str
-
-class ChatRequest(BaseModel):
-    messages: List[Message]
-
 openai.api_key = "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"
 
 class TrainingData(BaseModel):
     filenames: list
     labels: list
+
+@app.get("/", tags=["Root"])
+async def root():
+    return {"message": "Welcome to the Melanoma/Nevus Detection API!"}
 
 @app.post("/training", tags=["Model Training"])
 async def train_model(training_data: TrainingData):
@@ -41,19 +38,22 @@ async def train_model(training_data: TrainingData):
 
 @app.post("/predict", tags=["Model Prediction"])
 async def predict(file: UploadFile = File(...)):
-    model_path = "model.h5"
+    model_path = "model.keras"
 
     image_bytes = await file.read()
     result = predict_image(model_path, image_bytes)
 
     return JSONResponse(content={"prediction": result})
 
-@app.post("/model", tags=["Model Info"])
-async def get_model_response(chat_request: ChatRequest):
+@app.get("/model", tags=["Model Info"])
+async def get_model_response(text: str = Query(..., title="Text to send to the model")):
     try:
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo-1106",
-            messages=[{"role": msg.role, "content": msg.content} for msg in chat_request.messages]
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": text}
+            ]
         )
         return JSONResponse(content={"response": response.choices[0].message['content']})
     except Exception as e:
